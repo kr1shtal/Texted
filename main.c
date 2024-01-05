@@ -1,11 +1,22 @@
+#include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
 
+struct termios term;
+
+void disableRawMode()
+{
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &term);
+}
+
 void enableRawMode()
 {
-    struct termios raw;
-    tcgetattr(STDIN_FILENO, &raw);
+    tcgetattr(STDIN_FILENO, &term);
+    atexit(disableRawMode);
+
+    struct termios raw = term;
     raw.c_lflag &= ~(ECHO);
+
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 }
 
