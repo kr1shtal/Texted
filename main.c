@@ -7,7 +7,12 @@
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
-struct termios term;
+struct editorConfig
+{
+    struct termios term;
+}
+
+struct editorConfig editor;
 
 void die(const char *s)
 {
@@ -20,7 +25,7 @@ void die(const char *s)
 
 void disableRawMode()
 {
-    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &term) == -1)
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &editor.term) == -1)
     {
         die("tcsetattr");
     }
@@ -28,14 +33,14 @@ void disableRawMode()
 
 void enableRawMode()
 {
-    if (tcgetattr(STDIN_FILENO, &term) == -1)
+    if (tcgetattr(STDIN_FILENO, &editor.term) == -1)
     {
         die("tcgetattr");
     }
 
     atexit(disableRawMode);
 
-    struct termios raw = term;
+    struct termios raw = editor.term;
     raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
     raw.c_oflag &= ~(OPOST);
     raw.c_cflag |= (CS8);
