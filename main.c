@@ -133,7 +133,12 @@ void editorDrawRows()
 {
     for (int y = 0; y < editor.screenrows; y++)
     {
-        write(STDOUT_FILENO, "~\r\n", 3);
+        write(STDOUT_FILENO, "~", 1);
+
+        if (y < editor.screenrows - 1)
+        {
+            write(STDOUT_FILENO, "\r\n", 2);
+        }
     }
 }
 
