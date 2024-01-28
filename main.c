@@ -7,6 +7,7 @@
 #include <termios.h>
 #include <unistd.h>
 
+#define EDITOR_VERSION "0.1"
 #define CTRL_KEY(k) ((k) & 0x1f)
 #define ABUF_INIT {NULL, 0}
 
@@ -159,7 +160,34 @@ void editorDrawRows(struct abuf *ab)
 {
     for (int y = 0; y < editor.screenrows; y++)
     {
-        abAppend(ab, "~", 1);
+        if (y == editor.screenrows / 3)
+        {
+            char welcome[80];
+            int welcomeLength = snprintf(welcome, sizeof(welcome), "Text Editor Version: %", EDITOR_VERSION);
+
+            if (welcomeLength > editor.screencols)
+            {
+                welcomeLength = editor.screencols;
+            }
+
+            int padding = (editor.screencols - welcomeLength) / 2;
+
+            if (padding)
+            {
+                abAppend(ab, "~", 1);
+                padding--;
+            }
+
+            while (padding--)
+            {
+                abAppend(ab, " ", 1);
+            }
+            abAppend(ab, welcome, welcomeLength);
+        }
+        else
+        {
+            abAppend(ab, "~", 1);
+        }
 
         abAppend(ab, "\x1b[K", 3);
         if (y < editor.screenrows - 1)
